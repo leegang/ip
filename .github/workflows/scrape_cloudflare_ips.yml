@@ -22,7 +22,10 @@ jobs:
         pip install requests beautifulsoup4
     
     - name: Run scraper
-      run: python cloudflare_ip_scraper.py
+      run: 
+        ls 
+        pwd
+        python cloudflare_ip_scraper.py
     
     - name: Commit and push if changes
       run: |

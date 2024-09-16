@@ -1,30 +1,72 @@
 import requests
 from bs4 import BeautifulSoup
-import time
+import re
 
-def scrape_cloudflare_ips():
-    url = 'https://api.uouin.com/cloudflare.html'
+def fetch_and_parse(url):
     response = requests.get(url)
-    soup = BeautifulSoup(response.text, 'html.parser')
+    return BeautifulSoup(response.text, 'html.parser')
+
+def extract_ip_info(soup, url):
+    ip_info = []
     
-    rows = soup.find_all('tr')
+    if 'uouin.com' in url:
+        rows = soup.find_all('tr')
+        for row in rows[1:]:  # Skip header row
+            cols = row.find_all('td')
+            if len(cols) >= 3:
+                ip = cols[2].text.strip()
+                line = cols[1].text.strip()
+                ip_info.append(f"{ip}#{line}")
     
-    ip_data = []
-    for row in rows[1:]:  # Skip the header row
-        columns = row.find_all('td')
-        print(columns[0])
-        if len(columns) >= 3:
-            network_type = columns[1].text.strip()
-            ip = columns[2].text.strip()
-            ip_data.append(f"{ip}#{network_type}")
+    elif '030101.xyz' in url:
+        ip_elements = soup.find_all(text=re.compile(r'\d+\.\d+\.\d+\.\d+'))
+        for ip in ip_elements:
+            ip_info.append(f"{ip}#BestCF")
     
-    filename = f'cloudflare_ips.txt'
+    elif '090227.xyz' in url:
+        rows = soup.find_all('tr')
+        for row in rows[1:]:  # Skip header row
+            cols = row.find_all('td')
+            if len(cols) >= 3:
+                ip = cols[1].text.strip()
+                line = cols[0].text.strip()
+                ip_info.append(f"{ip}#{line}")
     
-    with open(filename, 'w', encoding='utf-8') as f:
-        for line in ip_data:
-            f.write(line + '\n')
+    elif 'hostmonit.com' in url:
+        rows = soup.find_all('tr')
+        for row in rows[1:]:  # Skip header row
+            cols = row.find_all('td')
+            if len(cols) >= 2:
+                ip = cols[1].text.strip()
+                colo = cols[-1].text.strip()
+                ip_info.append(f"{ip}#{colo}")
     
-    print(f"Data saved to {filename}")
+    return ip_info
+
+def main():
+    urls = [
+        "https://ipdb.030101.xyz/bestcf/",
+        "https://cf.090227.xyz/",
+        "https://stock.hostmonit.com/CloudFlareYes",
+        "https://api.uouin.com/cloudflare.html"
+    ]
+    
+    all_ip_info = []
+    
+    for url in urls:
+        try:
+            soup = fetch_and_parse(url)
+            ip_info = extract_ip_info(soup, url)
+            all_ip_info.extend(ip_info)
+        except Exception as e:
+            print(f"Error processing {url}: {str(e)}")
+    
+    # Remove duplicates and sort
+    unique_ip_info = sorted(set(all_ip_info))
+    
+    # Print results
+    for info in unique_ip_info:
+        print(info)
 
 if __name__ == "__main__":
-    scrape_cloudflare_ips()
+    main()

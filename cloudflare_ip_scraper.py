@@ -17,8 +17,7 @@ def scrape_cloudflare_ips():
             network_type = columns[1].text.strip()
             ip_data.append(f"{ip}#{network_type}")
     
-    timestamp = time.strftime("%Y%m%d_%H%M%S")
-    filename = f'cloudflare_ips_{timestamp}.txt'
+    filename = f'cloudflare_ips.txt'
     
     with open(filename, 'w', encoding='utf-8') as f:
         for line in ip_data:

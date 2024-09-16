@@ -14,8 +14,8 @@ def scrape_cloudflare_ips():
         columns = row.find_all('td')
         print(columns[0])
         if len(columns) >= 3:
-            ip = columns[2].text.strip()
             network_type = columns[1].text.strip()
+            ip = columns[2].text.strip()
             ip_data.append(f"{ip}#{network_type}")
     
     filename = f'cloudflare_ips.txt'

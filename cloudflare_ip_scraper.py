@@ -12,6 +12,7 @@ def scrape_cloudflare_ips():
     ip_data = []
     for row in rows[1:]:  # Skip the header row
         columns = row.find_all('td')
+        print(columns[0])
         if len(columns) >= 3:
             ip = columns[2].text.strip()
             network_type = columns[1].text.strip()

@@ -63,10 +63,13 @@ def main():
     
     # Remove duplicates and sort
     unique_ip_info = sorted(set(all_ip_info))
+
     
-    # Print results
-    for info in unique_ip_info:
-        print(info)
+    
+    # Save results to a txt file
+    with open('cloudflare_ips.txt', 'w', encoding='utf-8') as f:
+        for info in unique_ip_info:
+            f.write(f"{info}\n")
 
 if __name__ == "__main__":
     main()

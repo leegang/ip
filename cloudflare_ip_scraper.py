@@ -14,14 +14,10 @@ def extract_ip_info(soup, url):
         for row in rows[1:]:  # Skip header row
             cols = row.find_all('td')
             if len(cols) >= 3:
-                ip = cols[2].text.strip()
-                line = cols[1].text.strip()
+                ip = cols[1].text.strip()
+                line = cols[0].text.strip()
                 ip_info.append(f"{ip}#{line}")
     
-    elif '030101.xyz' in url:
-        ip_elements = soup.find_all(text=re.compile(r'\d+\.\d+\.\d+\.\d+'))
-        for ip in ip_elements:
-            ip_info.append(f"{ip}#BestCF")
     
     elif '090227.xyz' in url:
         rows = soup.find_all('tr')
@@ -33,19 +29,17 @@ def extract_ip_info(soup, url):
                 ip_info.append(f"{ip}#{line}")
     
     elif 'hostmonit.com' in url:
-        rows = soup.find_all('tr')
-        for row in rows[1:]:  # Skip header row
-            cols = row.find_all('td')
-            if len(cols) >= 2:
-                ip = cols[1].text.strip()
-                colo = cols[-1].text.strip()
-                ip_info.append(f"{ip}#{colo}")
+        ip_cells = soup.find_all('td', class_='el-table_3_column_16')
+        colo_cells = soup.find_all('td', class_='el-table_3_column_22')
+        for ip_cell, colo_cell in zip(ip_cells, colo_cells):
+            ip = ip_cell.text.strip()
+            colo = colo_cell.text.strip()
+            ip_info.append(f"{ip}#{colo}")
     
     return ip_info
 
 def main():
     urls = [
-        "https://ipdb.030101.xyz/bestcf/",
         "https://cf.090227.xyz/",
         "https://stock.hostmonit.com/CloudFlareYes",
         "https://api.uouin.com/cloudflare.html"

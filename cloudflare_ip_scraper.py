@@ -3,8 +3,28 @@ from bs4 import BeautifulSoup
 import re
 
 def fetch_and_parse(url):
-    response = requests.get(url)
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    }
+    response = requests.get(url, headers=headers)
     return BeautifulSoup(response.text, 'html.parser')
+
+
+import re
+
+def is_ipv6(ip):
+    try:
+        ipaddress.IPv6Address(ip)
+        return True
+    except ipaddress.AddressValueError:
+        return False
+
+
+def format_ip(ip, line):
+    if is_ipv6(ip):
+        return f"[{ip}]:80#{line}"
+    else:
+        return f"{ip}#{line}"
 
 def extract_ip_info(soup, url):
     ip_info = []
@@ -16,7 +36,7 @@ def extract_ip_info(soup, url):
             if len(cols) >= 3:
                 ip = cols[1].text.strip()
                 line = cols[0].text.strip()
-                ip_info.append(f"{ip}#{line}")
+                ip_info.append(format_ip(ip, line))
     
     
     elif '090227.xyz' in url:
@@ -26,15 +46,15 @@ def extract_ip_info(soup, url):
             if len(cols) >= 3:
                 ip = cols[1].text.strip()
                 line = cols[0].text.strip()
-                ip_info.append(f"{ip}#{line}")
+                ip_info.append(format_ip(ip, line))
     
     elif 'hostmonit.com' in url:
         ip_cells = soup.find_all('td', class_='el-table_3_column_16')
-        colo_cells = soup.find_all('td', class_='el-table_3_column_22')
+        colo_cells = soup.find_all('td', class_='el-table_3_column_20')
         for ip_cell, colo_cell in zip(ip_cells, colo_cells):
             ip = ip_cell.text.strip()
             colo = colo_cell.text.strip()
-            ip_info.append(f"{ip}#{colo}")
+            ip_info.append(format_ip(ip, line))
     
     return ip_info
 

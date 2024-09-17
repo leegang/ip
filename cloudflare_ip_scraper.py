@@ -1,6 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
 import re
+import ipaddress
+
 
 def fetch_and_parse(url):
     headers = {
@@ -9,8 +11,6 @@ def fetch_and_parse(url):
     response = requests.get(url, headers=headers)
     return BeautifulSoup(response.text, 'html.parser')
 
-
-import re
 
 def is_ipv6(ip):
     try:

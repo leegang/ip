@@ -6,7 +6,8 @@ import ipaddress
 
 def fetch_and_parse(url):
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        'Cache-Control': 'no-cache'
     }
     response = requests.get(url, headers=headers)
     return BeautifulSoup(response.text, 'html.parser')
@@ -49,12 +50,26 @@ def extract_ip_info(soup, url):
                 ip_info.append(format_ip(ip, line))
     
     elif 'hostmonit.com' in url:
-        ip_cells = soup.find_all('td', class_='el-table_3_column_16')
-        colo_cells = soup.find_all('td', class_='el-table_3_column_20')
+        x = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        tuple_y = [(el, 7 * (el - 1) + 2, 7 * (el - 1) + 6) for el in x]
+        cl = [(f"table_{y[0]}_column_{y[1]}", f"table_{y[0]}_column_{y[2]}") for y in tuple_y]
+    
+        ip_cells = []
+        colo_cells = []
+    
+        for class_name in cl[0]:
+            ip_cells.extend(soup.find_all('td', class_=class_name))
+        for class_name in cl[1]:
+            colo_cells.extend(soup.find_all('td', class_=class_name))
+    
         for ip_cell, colo_cell in zip(ip_cells, colo_cells):
-            ip = ip_cell.text.strip()
-            colo = colo_cell.text.strip()
-            ip_info.append(format_ip(ip, line))
+            try:
+                ip = ip_cell.text.strip()
+                colo = colo_cell.text.strip()
+                ip_info.append(format_ip(ip, line))
+            except Exception as e:
+                print(f"Error processing cell: {e}")
+
     
     return ip_info
 

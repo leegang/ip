@@ -26,8 +26,6 @@ jobs:
     
     - name: Run scraper
       run: 
-        ls &&
-        pwd &&
         python cloudflare_ip_scraper.py
     
     - name: Commit and push if changes

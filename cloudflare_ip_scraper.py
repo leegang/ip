@@ -12,7 +12,7 @@ def fetch_and_parse(url):
     }
     # 添加时间戳参数
     timestamp = int(time.time() * 1000)
-    response = requests.get(url + f"?ts={timestamp}", headers=headers)
+    response = requests.get(url + f"#ts={timestamp}", headers=headers)
     return BeautifulSoup(response.text, 'html.parser')
 
 

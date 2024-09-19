@@ -90,7 +90,7 @@ def main():
         try:
             print(f"try {url}")
             soup = fetch_and_parse(url)
-            print(f":::soup:::\n {soup}"
+            print(f":::soup:::\n {soup}")
             ip_info = extract_ip_info(soup, url)
             all_ip_info.extend(ip_info)
         except Exception as e:

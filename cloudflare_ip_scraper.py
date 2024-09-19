@@ -4,11 +4,15 @@ import re
 import ipaddress
 
 
+import time
+
 def fetch_and_parse(url):
     headers = {
         'Cache-Control': 'no-cache'
     }
-    response = requests.get(url, headers=headers)
+    # 添加时间戳参数
+    timestamp = int(time.time() * 1000)
+    response = requests.get(url + f"?ts={timestamp}", headers=headers)
     return BeautifulSoup(response.text, 'html.parser')
 
 
@@ -86,6 +90,7 @@ def main():
         try:
             print(f"try {url}")
             soup = fetch_and_parse(url)
+            print(f":::soup:::\n {soup}"
             ip_info = extract_ip_info(soup, url)
             all_ip_info.extend(ip_info)
         except Exception as e:

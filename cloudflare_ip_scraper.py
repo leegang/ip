@@ -83,7 +83,10 @@ def main():
     all_ip_info = []
     
     for url in urls:
+         print(f"processing {url}")
+        
         try:
+            print(f"try {url}")
             soup = fetch_and_parse(url)
             ip_info = extract_ip_info(soup, url)
             all_ip_info.extend(ip_info)
@@ -92,7 +95,7 @@ def main():
     
     # Remove duplicates and sort
     unique_ip_info = sorted(set(all_ip_info))
-
+    print(f"unique ip length:{len(unique_ip_info)}")
     
     
     # Save results to a txt file

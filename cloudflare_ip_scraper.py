@@ -83,8 +83,7 @@ def main():
     all_ip_info = []
     
     for url in urls:
-         print(f"processing {url}")
-        
+        print(f"processing {url}")
         try:
             print(f"try {url}")
             soup = fetch_and_parse(url)

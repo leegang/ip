@@ -15,11 +15,11 @@ def fetch_and_parse(url):
     timestamp = int(time.time() * 1000)
     if  'hostmonit.com' in url:
         data = {"key": "iDetkOys"}
-        response = requests.post(url + f"#ts={timestamp}", data = data)
+        response = requests.post(url, data = data)
+        return response
     else:
         response = requests.get(url + f"#ts={timestamp}", headers=headers)
-    
-    return BeautifulSoup(response.text, 'html.parser')
+        return BeautifulSoup(response.text, 'html.parser')
 
 
 def is_ipv6(ip):

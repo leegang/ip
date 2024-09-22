@@ -16,7 +16,7 @@ def fetch_and_parse(url):
     if  'hostmonit.com' in url:
         data = {"key": "iDetkOys"}
         response = requests.post(url, data = data)
-        return response
+        return response.json
     else:
         response = requests.get(url + f"#ts={timestamp}", headers=headers)
         return BeautifulSoup(response.text, 'html.parser')
@@ -59,7 +59,7 @@ def extract_ip_info(soup, url):
                 ip_info.append(format_ip(ip, line))
     
     elif 'hostmonit.com' in url:
-        text = json.loads(soup)
+        text = json.loads(soup.json)
         ip_cell = text['ip']
         colo_cell = text['colo']
         for ip_cell, colo_cell in zip(ip_cells, colo_cells):

@@ -76,7 +76,7 @@ def extract_ip_info(soup, url):
 def main():
     urls = [
         # "https://cf.090227.xyz/",
-        "https://stock.hostmonit.com/CloudFlareYes",
+        "https://api.uouin.com/cloudflare.html",
         "https://api.hostmonit.com/get_optimization_ip"
     ]
     

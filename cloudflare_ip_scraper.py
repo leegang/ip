@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import ipaddress
+import json
 
 
 import time
@@ -12,7 +13,12 @@ def fetch_and_parse(url):
     }
     # 添加时间戳参数
     timestamp = int(time.time() * 1000)
-    response = requests.get(url + f"#ts={timestamp}", headers=headers)
+    if  'hostmonit.com' in url:
+        data = {"key": "iDetkOys"}
+        response = requests.post(url + f"#ts={timestamp}", data = data)
+    else:
+        response = requests.get(url + f"#ts={timestamp}", headers=headers)
+    
     return BeautifulSoup(response.text, 'html.parser')
 
 
@@ -53,18 +59,9 @@ def extract_ip_info(soup, url):
                 ip_info.append(format_ip(ip, line))
     
     elif 'hostmonit.com' in url:
-        x = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-        tuple_y = [(el, 7 * (el - 1) + 2, 7 * (el - 1) + 6) for el in x]
-        cl = [(f"table_{y[0]}_column_{y[1]}", f"table_{y[0]}_column_{y[2]}") for y in tuple_y]
-    
-        ip_cells = []
-        colo_cells = []
-    
-        for class_name in cl[0]:
-            ip_cells.extend(soup.find_all('td', class_=class_name))
-        for class_name in cl[1]:
-            colo_cells.extend(soup.find_all('td', class_=class_name))
-    
+        text = json.loads(soup)
+        ip_cell = text['ip']
+        colo_cell = text['colo']
         for ip_cell, colo_cell in zip(ip_cells, colo_cells):
             try:
                 ip = ip_cell.text.strip()
@@ -79,8 +76,8 @@ def extract_ip_info(soup, url):
 def main():
     urls = [
         # "https://cf.090227.xyz/",
-        # "https://stock.hostmonit.com/CloudFlareYes",
-        "https://api.uouin.com/cloudflare.html"
+        "https://stock.hostmonit.com/CloudFlareYes",
+        "https://api.hostmonit.com/get_optimization_ip"
     ]
     
     all_ip_info = []

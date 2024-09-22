@@ -13,10 +13,21 @@ def fetch_and_parse(url):
     }
     # 添加时间戳参数
     timestamp = int(time.time() * 1000)
-    if  'hostmonit.com' in url:
+    timestamp = int(time.time() * 1000)
+
+    if 'hostmonit.com' in url:
         data = {"key": "iDetkOys"}
-        response = requests.post(url, data = data)
-        return response.json
+        response = requests.post(url, data=data)
+        try:
+            # 确保响应内容是JSON格式
+            response.raise_for_status()  # 检查响应状态码
+            return response.json()  # 直接解析JSON
+        except requests.exceptions.HTTPError as errh:
+            print("Http Error:", errh)
+        except requests.exceptions.ConnectionError as errc:
+            print("Error Connecting:", errc)
+        except requests.exceptions.Timeout as errt:
+            print("Timeout Error:", errt)
     else:
         response = requests.get(url + f"#ts={timestamp}", headers=headers)
         return BeautifulSoup(response.text, 'html.parser')
